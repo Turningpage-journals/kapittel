@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="app-version" content="2026-10-17o">
+<meta name="app-version" content="2026-10-17p">
 <title>Kapittel</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Ditt nye kapittel starter her. Refleksjon, vekst, venner og egentid.">
@@ -301,7 +301,7 @@ const THEMES={
  6:["Reise og røtter",["Hvor føler jeg meg mest fri?","Hvilke deler av familiehistorien min vil jeg utforske?","Hvilke reiser vil jeg ha gjort før jeg fyller 30?"],"Lag en «30 før 30»-liste under Ting jeg vil gjøre."],
  7:["Natur og ro",["Hva skjer i hodet mitt når jeg er ute i naturen?","Hvem vil jeg ha med på tur?","Hvilke små ritualer gir meg ro i hverdagen?"],"Én lang tur med venner, avsluttet med mat dere lager sammen."],
  8:["Ny start",["Hva vil jeg lære denne høsten: et kurs, et språk, en grad?","Hvilke vaner fra sommeren vil jeg beholde?","Hva er jeg stolt av så langt i år?"],"Meld deg på én ting du har utsatt."],
- 9:["Status og retning",["Hvor står jeg nå, sammenlignet med for ett år siden?","Hva har jeg lært om meg selv i år?","Hva tar jeg med videre, og hva legger jeg igjen?"],"Skriv et brev til deg selv om ett år."],
+ 9:["Status og retning",["Hvor står jeg nå, og hvor vil jeg være om ett år?","Hva har jeg lært om meg selv i år?","Hva tar jeg med videre, og hva legger jeg igjen?"],"Skriv et brev til deg selv om ett år."],
  10:["Hjemme hos meg",["Hva får meg til å føle meg hjemme, og hva mangler?","Hvilke tre ting vil jeg fikse først, og hva kan vente?","Hvilke ting rundt meg forteller hvem jeg er?"],"Gjør én sone hjemme helt ferdig for under 1 000 kr."],
  11:["Familie og tradisjoner",["Hvilke tradisjoner vil jeg ta med inn i mitt eget liv?","Hvem gir meg energi i høytiden, og hvem tapper meg?","Hva vil jeg si til familien som jeg sjelden sier?"],"Arranger én liten førjulsmiddag, med budsjett satt på forhånd."]
 };
@@ -455,7 +455,7 @@ function vMonth(){
  <button class="icon-btn" data-act="month" data-v="1" aria-label="Neste måned">${chev(1)}</button></div>
  <div class="grid">
  ${th[1].map((q,i)=>card(["acc","pist","sky"][i],q,ta("q"+i))).join("")}
- ${card("butter","Månedens utfordring",`<div class="challenge"><button class="box ${m.done?"on":""}" data-act="chal" aria-label="Utfordringen er fullført"></button><p>${th[2]}</p></div>`)}
+ ${card("butter","Månedens utfordring",`<div class="challenge"><button class="box ${m.done?"on":""}" data-act="chal" aria-label="Utfordringen er fullført"></button><p>${th[2]}</p></div><p class="hint" style="margin-top:12px">Neste måned: <b>${THEMES[(U.month.getMonth()+1)%12][0]}</b></p>`)}
  ${card("rose","Det beste denne måneden",joys.length?`<ul class="list">${joys.join("")}</ul>`:`<p class="hint" style="margin:0">Det du skriver under «Det beste i dag» om kvelden, samles her.</p>`)}
  ${card("acc","Neste måned vil jeg prioritere",ta("next"))}
  ${card("sky","Milepæler i mitt kapittel",(()=>{const done=S.miles.filter(x=>x.done).length,tot=S.miles.length;
