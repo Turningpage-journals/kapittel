@@ -1,0 +1,15 @@
+{
+  "name": "Kapittel",
+  "short_name": "Kapittel",
+  "description": "Ditt nye kapittel. Refleksjon, vekst, venner og egentid.",
+  "lang": "nb",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#E9DCCB",
+  "theme_color": "#BC8370",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
