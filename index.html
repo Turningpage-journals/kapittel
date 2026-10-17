@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="app-version" content="2026-10-17n">
+<meta name="app-version" content="2026-10-17o">
 <title>Kapittel</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Ditt nye kapittel starter her. Refleksjon, vekst, venner og egentid.">
@@ -281,6 +281,7 @@ const SCALES={
   work:{q:"Hvordan var dagen på jobb eller studiet?",l:["Tung","Treg","Grei","God","Kjempebra"]}
 };
 const SOCIAL=["Venner","Familie","Kolleger","Date","Middag hjemme","Middag ute","Byen","Alene"];
+const FREE=["Sov lenge","Brunsj","Tur ute","Trening","Venner","Familie","Date","Sofa og serie","Fikset hjemme","Ærender","Reise","Ingenting, og det var deilig"];
 const CARE=["Sofa og serie","Laget god mat","Tidlig i seng","Ringte familien","Egentid","Ryddet hjemme","Kreativt prosjekt"];
 const SPEND=["Ingen kjøp","Bare planlagt","Litt impuls","Mye impuls"];
 const AREAS=["Karriere og læring","Økonomi","Hjem","Familie","Venner","Kjærlighet","Kropp og trening","Ro og egentid","Eventyr og reise"];
@@ -375,7 +376,9 @@ function vToday(){
  if(look)h+=card("butter","Det du gledet deg til",`<p class="look">${esc(look)}</p><p class="q" style="justify-content:center;margin-top:12px"><span>Ble det noe av?</span></p><div class="seg" style="margin-top:4px">${["Ja","Delvis","Nei"].map((l,i)=>`<button class="${d.lookRes===i+1?"on":""}" data-act="lookres" data-v="${i+1}">${l}</button>`).join("")}</div>${d.lookRes===3?`<p class="hint center">Planer flytter seg. Det sier noe om dagen, ikke om deg.</p>`:""}`);
  h+=card("acc","Humør og energi",scale("mood",d.mood)+`<div class="sp"></div>`+scale("energy",d.energy));
  if(!d.sleep)h+=card("sky","Søvn i natt",scale("sleep",d.sleep));
- if(M().work)h+=card("sky","Jobb og studier",scale("work",d.work)+`<input type="text" id="in-win" style="margin-top:12px" data-bind="${k}|win" value="${esc(d.win)}" placeholder="Noe jeg fikk til i dag" aria-label="Noe jeg fikk til i dag">`);
+ if(M().work){const wkend=[0,6].includes(U.day.getDay()),off=d.off!==undefined?d.off:wkend;
+  h+=off?card("sky",wkend?"Helg og fri":"Fri i dag",`<p class="q"><span>Hva brukte du fridagen på?</span></p>${chips("free",FREE,d.free)}<p class="hint">Fri er også fremdrift. Hvile gjør resten av uka lettere.</p><button class="link" data-act="offtoggle" style="margin-top:6px">Jobbet eller studerte likevel</button>`)
+  :card("sky","Jobb og studier",scale("work",d.work)+`<input type="text" id="in-win" style="margin-top:12px" data-bind="${k}|win" value="${esc(d.win)}" placeholder="Noe jeg fikk til i dag" aria-label="Noe jeg fikk til i dag"><button class="link" data-act="offtoggle" style="margin-top:8px">${wkend?"Helg, jobbet ikke":"Fri i dag, jobbet ikke"}</button>`);}
  if(M().social)h+=card("rose","Hvem var jeg med?",chips("social",SOCIAL,d.social)+`<input type="text" id="in-people" style="margin-top:10px" data-bind="${k}|people" value="${esc(d.people)}" placeholder="Navn, eller hva dere gjorde" aria-label="Hvem var du med">`);
  if(M().train)h+=card("pist","Bevegelse",chips("move",S.meta.moves,d.move)+`<p class="hint">Endre aktivitetene under innstillinger.</p>`);
  h+=card("sky","Egenomsorg",chips("care",CARE,d.care));
@@ -543,6 +546,7 @@ function vOverview(){
  ${card("acc","Det dataene dine viser",insights(all,4,false),"solid")}
  ${M().train?card("pist","Bevegelse",bars(tally("move",S.meta.moves))):""}
  ${M().social?card("rose","Sosialt liv",bars(tally("social",SOCIAL))):""}
+ ${M().work&&regs.some(x=>(x.d.free||[]).length)?card("sky","Fridagene dine",bars(tally("free",FREE))):""}
  ${M().money?card("butter","Penger",`<p style="margin:0">Impulskjøp <b>${imp}</b> av ${sp.length} registrerte dager. Brukt utenom faste regninger: <b>${kr(regs.reduce((a,x)=>a+(+x.d.amt||0),0))}</b>.</p>`):""}
  </div>`;
 }
@@ -648,6 +652,7 @@ document.addEventListener("click",e=>{
  case "findadd":{const t=document.getElementById("fT");if(!t.value.trim()){toast("Skriv hva du fant");t.focus();return;}S.finds.push({t:t.value.trim(),where:document.getElementById("fW").value.trim(),price:+document.getElementById("fP").value||0});save();render();return;}
  case "finddel":S.finds.splice(+v,1);save();render();return;
  case "range":U.range=+v;render();return;
+ case "offtoggle":{const d=dayData(k),wkend=[0,6].includes(U.day.getDay()),cur=d.off!==undefined?d.off:wkend;d.off=!cur;if(d.off)delete d.work;save();render();return;}
  case "badd":{const i=document.getElementById("bnew-"+v);if(i&&i.value.trim()){S.budget[v].push({t:i.value.trim(),a:""});save();render();const n=document.getElementById(`b-${v}-${S.budget[v].length-1}-a`);if(n)n.focus();}return;}
  case "bdel":{const[g,i]=v.split("|");S.budget[g].splice(+i,1);save();render();return;}
  case "bexample":S.budget=BEX();save();render();toast("Eksempel lagt inn. Bytt til dine egne tall.");return;
