@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="app-version" content="2026-10-17r">
+<meta name="app-version" content="2026-10-18a">
 <title>Kapittel</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Ditt nye kapittel starter her. Refleksjon, vekst, venner og egentid.">
@@ -110,6 +110,8 @@ input:focus,select:focus{outline:none;border-bottom-color:var(--d,var(--ink))}
 textarea{display:block;width:100%;border:none;background:transparent;resize:vertical;font-family:var(--display);font-size:18px;line-height:36px;min-height:108px;padding:0 2px;
   background-image:repeating-linear-gradient(to bottom,transparent 0 35px,color-mix(in srgb,var(--d,var(--muted)) 35%,transparent) 35px 36px);background-attachment:local}
 textarea:focus{outline:none}
+textarea.tall{min-height:144px}
+textarea{overflow:hidden}
 .hint{font-size:14px;color:var(--muted);margin:8px 0 0}
 .card.solid .hint{color:var(--on-acc);opacity:.8}
 .three{display:grid;gap:4px}
@@ -329,7 +331,9 @@ function applyMeta(){
  const col=(ACCENTS.find(x=>x[0]===a)||ACCENTS[0])[2];const tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.content=col;
 }
 function renderTabs(){const t=tabs();if(!t.some(x=>x[0]===U.view))U.view="today";document.getElementById("tabs").innerHTML=t.map(([k,l])=>`<button data-act="tab" data-v="${k}" class="${U.view===k?"on":""}" ${U.view===k?'aria-current="page"':""}>${ICONS[k]}<span>${l}</span></button>`).join("");}
-function render(){applyMeta();renderTabs();document.getElementById("view").innerHTML=({today:vToday,week:vWeek,month:vMonth,home:vHome,budget:vBudget,overview:vOverview})[U.view]();if(U.view==="overview")drawChart();}
+function grow(el){el.style.height="auto";el.style.height=el.scrollHeight+"px";}
+function growAll(){document.querySelectorAll("#view textarea").forEach(grow);}
+function render(){applyMeta();renderTabs();document.getElementById("view").innerHTML=({today:vToday,week:vWeek,month:vMonth,home:vHome,budget:vBudget,overview:vOverview})[U.view]();if(U.view==="overview")drawChart();growAll();}
 
 /* ---------- I DAG ---------- */
 const dayData=k=>S.days[k]||(S.days[k]={});
@@ -445,7 +449,7 @@ function insights(days,max,week){
 /* ---------- MÅNEDEN ---------- */
 function vMonth(){
  const mk=monthKey(U.month),m=S.months[mk]||{},isCur=mk===monthKey(today()),th=THEMES[U.month.getMonth()];
- const ta=f=>`<textarea id="m-${f}" data-bind="M|${mk}|${f}">${esc(m[f])}</textarea>`;
+ const ta=f=>`<textarea class="tall" id="m-${f}" data-bind="M|${mk}|${f}" placeholder="Skriv så mye du vil. Trykk linjeskift for nytt avsnitt.">${esc(m[f])}</textarea>`;
  const goals=AREAS.map((a,i)=>{const g=S.goals[a]||{};return `<div class="goal"><div class="top"><b class="gname">${a}</b><div class="score" role="group" aria-label="Score for ${a}">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button class="${g.s>=n?"on":""}" data-act="goal" data-v="${i}|${n}" aria-label="${n} av 10">${n}</button>`).join("")}</div></div><input type="text" id="g-${i}" data-bind="G|${a}|t" value="${esc(g.t)}" placeholder="Mål for året" aria-label="Mål for ${a}"></div>`;}).join("");
  const wish=S.wishes.map((h,i)=>`<li class="${h.done?"done":""}"><button class="box ${h.done?"on":""}" data-act="wishdone" data-v="${i}" aria-label="Merk som gjort"></button><span class="t"><span>${esc(h.t)}</span></span><button class="x" data-act="wishdel" data-v="${i}" aria-label="Fjern">×</button></li>`).join("");
  const joys=[];{const y=U.month.getFullYear(),mo=U.month.getMonth();for(let dt=new Date(y,mo,1);dt.getMonth()===mo&&dt<=today();dt=addDays(dt,1)){const x=S.days[iso(dt)];if(x&&x.best)joys.push(`<li><span class="t"><span>${esc(x.best)}</span><small>${fmtShort(dt)}</small></span></li>`);}}
@@ -696,6 +700,8 @@ function bind(e){const el=e.target;if(!el.dataset||!el.dataset.bind)return;const
  else{dayData(p[0])[p[1]]=el.value;}
  saveSoon();}
 document.addEventListener("input",bind);
+document.addEventListener("input",e=>{if(e.target.tagName==="TEXTAREA"&&!e.target.classList.contains("plain"))grow(e.target);});
+window.addEventListener("resize",growAll);
 try{const t=localStorage.getItem(KEY+".theme");if(t&&t!=="auto")document.documentElement.setAttribute("data-theme",t);}catch(e){}
 
 /* Oppdateringssjekk: ser etter nyere versjon der appen ligger, uten å røre dataene */
